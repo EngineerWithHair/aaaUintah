@@ -1,0 +1,192 @@
+`configure' configures Uintah 2.6 to adapt to many kinds of systems.
+
+Usage: ./configure [OPTION]... [VAR=VALUE]...
+
+To assign environment variables (e.g., CC, CFLAGS...), specify them as
+VAR=VALUE.  See below for descriptions of some of the useful variables.
+
+Defaults for the options are specified in brackets.
+
+Configuration:
+  -h, --help              display this help and exit
+      --help=short        display options specific to this package
+      --help=recursive    display the short help of all the included packages
+  -V, --version           display version information and exit
+  -q, --quiet, --silent   do not print `checking ...' messages
+      --cache-file=FILE   cache test results in FILE [disabled]
+  -C, --config-cache      alias for `--cache-file=config.cache'
+  -n, --no-create         do not create output files
+      --srcdir=DIR        find the sources in DIR [configure dir or `..']
+
+Installation directories:
+  --prefix=PREFIX         install architecture-independent files in PREFIX
+                          [/usr/local]
+  --exec-prefix=EPREFIX   install architecture-dependent files in EPREFIX
+                          [PREFIX]
+
+By default, `make install' will install all the files in
+`/usr/local/bin', `/usr/local/lib' etc.  You can specify
+an installation prefix other than `/usr/local' using `--prefix',
+for instance `--prefix=$HOME'.
+
+For better control, use the options below.
+
+Fine tuning of the installation directories:
+  --bindir=DIR            user executables [EPREFIX/bin]
+  --sbindir=DIR           system admin executables [EPREFIX/sbin]
+  --libexecdir=DIR        program executables [EPREFIX/libexec]
+  --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
+  --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
+  --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --libdir=DIR            object code libraries [EPREFIX/lib]
+  --includedir=DIR        C header files [PREFIX/include]
+  --oldincludedir=DIR     C header files for non-gcc [/usr/include]
+  --datarootdir=DIR       read-only arch.-independent data root [PREFIX/share]
+  --datadir=DIR           read-only architecture-independent data [DATAROOTDIR]
+  --infodir=DIR           info documentation [DATAROOTDIR/info]
+  --localedir=DIR         locale-dependent data [DATAROOTDIR/locale]
+  --mandir=DIR            man documentation [DATAROOTDIR/man]
+  --docdir=DIR            documentation root [DATAROOTDIR/doc/uintah]
+  --htmldir=DIR           html documentation [DOCDIR]
+  --dvidir=DIR            dvi documentation [DOCDIR]
+  --pdfdir=DIR            pdf documentation [DOCDIR]
+  --psdir=DIR             ps documentation [DOCDIR]
+
+System types:
+  --build=BUILD     configure for building on BUILD [guessed]
+  --host=HOST       cross-compile to build programs to run on HOST [BUILD]
+
+Optional Features:
+  --disable-option-checking  ignore unrecognized --enable/--with options
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+--enable-wasatch_3p     Download and build the Wasatch thirdparty libraries
+                          - TabProps ExprLibs SpatialOps RadProps NSCBC.
+--enable-pidx           Download and build the PIDX thirdparty library
+--enable-kokkos         Download and build the Kokkos thirdparty library
+--enable-static         Build a statically linked version of Uintah. Set to
+                          'full' to force full static link.
+--enable-verbose        Turn on verbose configure output
+--enable-debug          Turn on debugging (default is -g) or specify your
+                          own. example: --enable-debug='-O0 -g'
+--enable-optimize       Turn on optimize (default is -O2) or specify your
+                          own. example: --enable-optimize='-O3'
+--enable-64bit          Compile in 64 bit mode
+--enable-32bit          Compile in 32 bit mode
+--enable-output-avg-walltime
+                          Output ellapsed wall-times
+--enable-ray-scatter    Turn on ray scattering in Arches
+--enable-gencode        Specify compute capability for GPU code generation
+                          (allowable values: 20, 21, 30, 35)
+--enable-largesos       Build one .so per directory
+--enable-sci-malloc     Use SCI memory allocation/deallocation checks.
+--enable-memory-initialization=8_bit_number
+                          Force all new'd and malloc'd memory to be initialied
+                          to the value given - defaults to 127.
+--enable-assertion-level=N
+                          Use assertion level N (0-3) (Where 0 turns off
+                          assertions, and 3 turns on all assertions.)
+--enable-scinew-line-numbers
+                          Have SCI malloc store the file and line that calls
+                          'scinew'
+--enable-throw-level=N  Use throw level N (0-3)
+--enable-rpath          Set a default runtime library search path
+--enable-unit-tests     Turn on the unit tests.
+--enable-minimal        Build a minimal set of libraries
+--enable-arches         Turn on the Arches component - and Radiation Model.
+--enable-examples       Turn on the Examples component - and Radiation
+                          Model.
+--enable-fvm            Turn on the FVM component.
+--enable-ice            Turn on the Ice component.
+--enable-mpm            Turn on the Mpm component.
+--enable-phasefield     Turn on the PhaseField component.
+--enable-wasatch        Turn on the Wasatch component - and Radiation Model.
+--enable-all-components Turn on the all components.
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+--with-atlas=DIR        Use the atlas installation (for lapack/blas) in DIR
+--with-math=FULL_PATH_INCLUDING_LIB
+                          Use specified math library (Defaults to built in
+                          -lm)
+--with-mkl=DIR          Use the mkl (for lapack/blas) installation in DIR
+--with-essl=DIR         Use the essl (for lapack/blas) installation in DIR
+--with-acml=DIR         Use the acml (for lapack/blas) installation in DIR
+--with-blas=DIR         Use the blas installation in DIR
+--with-lapack=DIR       Use the lapack installation in DIR
+--with-fortran=DIR      Use the fortran (eg: g2c) installation in DIR/lib
+--with-ofed=DIR         Specify that OFED - Infiniband - is needed for the
+                          mpi installation
+--with-mx=DIR           Specify that mx - Myrinet - is needed for the mpi
+                          installation
+--with-pokitt=DIR       Use the PoKiTT installation in DIR
+--with-mpi=DIR          Use the mpi installation in DIR. Set to 'built-in'
+                          if mpi is automatically handled by your compiler.
+--with-mpi-lib=DIR      Use the mpi libraries installed in DIR
+--with-mpi-include=DIR  Use the mpi include files installed in DIR
+--with-mpi-extra-libs=/path/to/lib1.so
+                          Use this additional library (or libraries - comma
+                          separated list) for mpi linking.
+--with-cuda=DIR         Use the CUDA installation in DIR
+--with-hypre=DIR        Use the hypre installation in DIR. Set to 'built-in'
+                          if explicit linking of hypre is NOT required.
+--with-hypre-lib=DIR    Use the hypre libraries installed in DIR
+--with-hypre-include=DIR
+                          Use the hypre include files installed in DIR
+--with-petsc=DIR        Use the petsc installation in DIR (or set to
+                          'built-in').
+--with-boost=DIR        Use the Boost library in DIR/lib
+--with-boost-library=DIR
+                          Use the Boost library in DIR
+--with-boost-include=DIR
+                          Use the Boost include files in DIR
+--with-spatialops=DIR   Use the Wasatch 3P SpatialOps library in DIR
+--with-exprlib=DIR      Use the Wasatch 3P ExprLib library in DIR
+--with-tabprops=DIR     Use the Wasatch 3P TabProps library in DIR
+--with-radprops=DIR     Use the Wasatch 3P RadProps library in DIR
+--with-nscbc=DIR        Use the Wasatch 3P NSCBC library in DIR
+--with-wasatch3p=DIR    Use the SpatialOps/ExprLib/TabPros/RadProps/NSCBC
+                          libraries in DIR
+--with-zoltan=DIR       Use the Zoltan installation in DIR
+--with-gperftools=DIR   Use the Google Perftools installation in DIR
+--with-kokkos=DIR       Use the Kokkos installation in DIR
+--with-zlib=DIR         Use the zlib installation in DIR - checks that
+                          $DIR/lib[64] and $DIR/include exist
+--with-jpeg=DIR         Use the jpeg installation in DIR
+--with-tiff=DIR         Use the tiff installation in DIR
+--with-xalan=DIR        Use the xalan installation in DIR
+--with-libxml2=DIR      Use the libxml2 installation in DIR. Set 'DIR' to
+                          'built-in' if explicit linking of xml2 is NOT
+                          required.
+--with-visit=DIR        Use the visit installation in DIR
+--with-visus=DIR        Turn on ViSUS IDX support. Point to ViSUS
+                          installation.
+--with-pidx=DIR         Turn on ViSUS Parallel IDX support. Point to PIDX
+                          installation.
+--with-MallocTrace=DIR  Use MallocTrace library. Note: you cannot use
+                          sci-malloc at the same time.
+
+Some influential environment variables:
+  CC          C compiler command
+  CFLAGS      C compiler flags
+  LDFLAGS     linker flags
+  CXX         C++ compiler command
+  CPPFLAGS    C/C++ preprocessor flags
+  CXXFLAGS    C++ compiler flags
+  F77         Fortran 77 compiler command
+  FFLAGS      Fortran 77 compiler flags
+  CPP         C preprocessor
+  CXXCPP      C++ preprocessor
+  NVCC        CUDA compiler driver command
+  NVCC_CFLAGS CUDA C compiler flags
+  NVCC_CXXFLAGS
+              CUDA C++ compiler flags
+  NVCC_LDFLAGS
+              CUDA linker flags
+  LIBS        libraries to pass to the linker, e.g. -l<library>
+
+Use these variables to override the choices made by `configure' or to help
+it to find libraries and programs with nonstandard names/locations.
+
+Report bugs to <uintah-developer@gforge.sci.utah.edu>.
