@@ -93,6 +93,11 @@ namespace Uintah {
                                      const MPMMaterial* matl,
                                      DataWarehouse* old_dw,
                                      DataWarehouse* new_dw);
+    //JIAHAO
+    virtual void computeInjury(const PatchSubset* patches,
+                                     const MPMMaterial* matl,
+                                     DataWarehouse* old_dw,
+                                     DataWarehouse* new_dw);
 
     /* Add computes and requires for the implicit code */
     virtual void addComputesAndRequires(Task* task,

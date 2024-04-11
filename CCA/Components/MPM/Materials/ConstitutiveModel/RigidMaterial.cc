@@ -108,6 +108,52 @@ RigidMaterial::computeStressTensor(const PatchSubset* patches,
   carryForward(patches, matl, old_dw, new_dw);
 }
 
+//JIAHAO: one way to escape injury computation
+void RigidMaterial::computeInjury(const PatchSubset* patches,
+                                const MPMMaterial* matl,
+                                DataWarehouse* old_dw,
+                                DataWarehouse* new_dw){
+  // JIAHAO: I tried to use carryForward method. It is beyond my capability now. 
+  //carryForward(patches, matl, old_dw, new_dw);
+  Ghost::GhostType  gan = Ghost::AroundNodes;
+
+  // Normal patch loop
+  for(int pp=0;pp<patches->size();pp++){
+    //JIAHAO: debug statements
+    //std::cout<<"the current patch pp is: "<<pp<<std::endl;
+    //std::cout<<"number of pathces is: "<<patches->size()<<std::endl;
+    const Patch* patch = patches->get(pp);
+
+    // Get particle info and patch info
+    int dwi              = matl->getDWIndex();
+//    ParticleSubset* pset = old_dw->getParticleSubset(dwi, patch);
+    ParticleSubset* pset = old_dw->getParticleSubset(dwi, patch,
+                                                     gan, 0, lb->pXLabel);
+    Vector dx            = patch->dCell();
+
+    // Particle and grid data universal to model type
+    // Old data containers
+    constParticleVariable<double>  pInjury;
+    Matrix3 Identity; Identity.Identity();
+
+    // New data containers
+    ParticleVariable<double>       pInjury_new;
+    
+
+    // Universal Gets
+    old_dw->get(pInjury,             lb->pInjuryLabel             ,pset);
+    
+    // JIAHAO: injury Allocations
+    new_dw->allocateAndPut(pInjury_new, lb->pInjuryLabel_preReloc, pset);
+
+    ParticleSubset::iterator iter = pset->begin();
+    for(; iter != pset->end(); iter++){
+      particleIndex idx = *iter;
+      pInjury_new[idx]=0.;   
+  }
+}
+}
+
 void 
 RigidMaterial::computeStressTensorImplicit(const PatchSubset* patches,
                                            const MPMMaterial* matl,

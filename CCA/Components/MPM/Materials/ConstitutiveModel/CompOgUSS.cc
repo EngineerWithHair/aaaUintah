@@ -469,7 +469,7 @@ void CompOgUSS::computeInjury(const PatchSubset* patches,
     } // end loop over particles
 
   }
-}
+}// JIAHAO: end of injury computation
 
 
 void CompOgUSS::carryForward(const PatchSubset* patches,

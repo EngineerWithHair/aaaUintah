@@ -214,9 +214,13 @@ ConstitutiveModel::carryForwardSharedData(ParticleSubset* pset,
 {
   ParticleVariable<double>  pIntHeatRate_new,p_q;
   ParticleVariable<Matrix3> pStress_new;
+  //JIAHAO: still need particleVariable pInjury here
+  //ParticleVariable<double>  pInjury_new; 
   new_dw->allocateAndPut(pIntHeatRate_new, lb->pdTdtLabel,             pset);
   new_dw->allocateAndPut(pStress_new,   lb->pStressLabel_preReloc,     pset);
   new_dw->allocateAndPut(p_q,           lb->p_qLabel_preReloc,         pset);
+  //JIAHAO: allocateAndPut pInjury_new
+  //new_dw->allocateAndPut(pInjury_new,   lb->pInjuryLabel_preReloc,     pset);
 
   ParticleSubset::iterator iter = pset->begin();
   for(; iter != pset->end(); iter++){
@@ -224,6 +228,8 @@ ConstitutiveModel::carryForwardSharedData(ParticleSubset* pset,
     pIntHeatRate_new[idx] = 0.0;
     pStress_new[idx]=Matrix3(0.0);
     p_q[idx]=0.;
+    //JIAHAO:
+    //pInjury_new[idx]=0.;
   }
 }
 
