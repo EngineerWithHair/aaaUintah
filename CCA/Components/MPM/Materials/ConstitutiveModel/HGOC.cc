@@ -231,6 +231,7 @@ void HGOC::initializeCMData(const Patch* patch,
 {
   // Initialize the variables shared by all constitutive models
   // This method is defined in the ConstitutiveModel base class.
+  ParticleSubset* pset = new_dw->getParticleSubset(matl->getDWIndex(), patch);
   initSharedDataForExplicit(patch, matl, new_dw);
   
   computeStableTimestep(patch, matl, new_dw);
@@ -239,10 +240,16 @@ void HGOC::initializeCMData(const Patch* patch,
   // constitutive model parameters and deformationMeasure
   Matrix3 Identity, zero(0.);
   Identity.Identity();
+
+  //JIAHAO
+  ParticleVariable<double> pInjury;
+  new_dw->getModifiable(pInjury,     lb->pInjuryLabel,             pset);
+  // JIAHAO
+  double injuryInitial(0.0);
   
   int dwi = matl->getDWIndex(); // aaa based on HypoElastic.cc
   //ParticleSubset* pset = new_dw->getParticleSubset(matl->getDWInd ex(), patch); //old
-  ParticleSubset* pset = new_dw->getParticleSubset(dwi, patch); //aaa
+  //ParticleSubset* pset = new_dw->getParticleSubset(dwi, patch); //aaa
 
   ParticleVariable<double> stretch;
   //ParticleVariable<double> stretch,fail;
@@ -272,6 +279,7 @@ void HGOC::initializeCMData(const Patch* patch,
     history4[*iter] = zero;
     history5[*iter] = zero;
     history6[*iter] = zero;
+    pInjury[*iter]  = injuryInitial;
   }
 }
 
@@ -654,6 +662,98 @@ void HGOC::computeStressTensor(const PatchSubset* patches,
   }
 }
 
+//JIAHAO: compute injury
+void HGOC::computeInjury(const PatchSubset* patches,
+                                const MPMMaterial* matl,
+                                DataWarehouse* old_dw,
+                                DataWarehouse* new_dw){
+
+// JIAHAO: comments for debugging purpose: testing where 
+// sus utility has been executed
+/*std::cout<<"*************"<<std::endl;
+std::cout<<"UCNH: compute injury"<<std::endl;
+std::cout<<"*************"<<std::endl;
+*/
+
+  Ghost::GhostType  gan = Ghost::AroundNodes;
+
+  // Normal patch loop
+  for(int pp=0;pp<patches->size();pp++){
+    //JIAHAO: debug statements
+    //std::cout<<"the current patch pp is: "<<pp<<std::endl;
+    //std::cout<<"number of pathces is: "<<patches->size()<<std::endl;
+    const Patch* patch = patches->get(pp);
+
+    // Get particle info and patch info
+    int dwi              = matl->getDWIndex();
+//    ParticleSubset* pset = old_dw->getParticleSubset(dwi, patch);
+    ParticleSubset* pset = old_dw->getParticleSubset(dwi, patch,
+                                                     gan, 0, lb->pXLabel);
+    Vector dx            = patch->dCell();
+
+    // Particle and grid data universal to model type
+    // Old data containers
+    constParticleVariable<Matrix3> pDefGrad;
+    constParticleVariable<Matrix3> pDefGrad_new;
+    constParticleVariable<double>  pInjury;
+    Matrix3 Identity; Identity.Identity();
+    //std::cout<<"pInjury is created"<<std::endl;
+    // New data containers
+    ParticleVariable<double>       pInjury_new;
+    
+    
+    //std::cout<<"pInjury_new is created"<<std::endl;
+
+    // Universal Gets
+
+    old_dw->get(pDefGrad,            lb->pDeformationMeasureLabel, pset);
+    old_dw->get(pInjury,             lb->pInjuryLabel             ,pset);
+    new_dw->get(pDefGrad_new,lb->pDeformationMeasureLabel_preReloc,pset);
+
+    
+    // JIAHAO: injury Allocations
+    new_dw->allocateAndPut(pInjury_new, lb->pInjuryLabel_preReloc, pset);
+    
+    //std::cout<<"pInjury_new allocated to pset"<<std::endl;
+
+    ParticleSubset::iterator iter = pset->begin();
+    for(; iter != pset->end(); iter++){
+      particleIndex idx = *iter;
+
+      // JIAHAO:
+      //std::cout<<"the current pID is: "<<idx<<std::endl;
+
+      double old_e1(0.0),old_e2(0.0),old_e3(0.0);
+      double new_e1(0.0),new_e2(0.0),new_e3(0.0);
+      double old_MPS(0.0), new_MPS(0.0);
+      double threshold(1.0);
+
+      //std::cout<<"pInjury before computation: "<<pInjury[idx]<<std::endl;
+      // Matrix3 pDefGradTranspose = pDefGrad[idx].Transpose();
+      Matrix3 EulerLagriangeTensorOld   = 0.5*(pDefGrad[idx].Transpose()*pDefGrad[idx]-Identity);
+      Matrix3 EulerLagriangeTensorNew   = 0.5*(pDefGrad_new[idx].Transpose()*pDefGrad_new[idx]-Identity);
+      int numEigenvalues_old=EulerLagriangeTensorOld.getEigenValues(old_e1,old_e2,old_e3);
+      int numEigenvalues_new=EulerLagriangeTensorNew.getEigenValues(new_e1,new_e2,new_e3);
+      old_MPS=std::abs(std::max(std::max(old_e1,old_e2),old_e3));
+      new_MPS=std::abs(std::max(std::max(new_e1,new_e2),new_e3));
+    
+
+      if (new_MPS>=threshold||old_MPS>=threshold){
+        if(old_MPS<threshold){
+          pInjury_new[idx]=pInjury[idx]+std::abs(new_MPS-threshold)*0.5;
+        }else if (new_MPS<threshold){
+          pInjury_new[idx]=pInjury[idx]+std::abs(old_MPS-threshold)*0.5;
+        }else{
+          pInjury_new[idx]=pInjury[idx]+std::abs(new_MPS-old_MPS)*0.5;
+        }
+        
+      }else{
+        pInjury_new[idx]=pInjury[idx];
+      }
+    } // end loop over particles
+
+  }
+}
 
 void HGOC::carryForward(const PatchSubset* patches,
                                  const MPMMaterial* matl,

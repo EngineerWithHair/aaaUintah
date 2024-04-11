@@ -133,7 +133,11 @@ namespace Uintah {
                                      const MPMMaterial* matl,
                                      DataWarehouse* old_dw,
                                      DataWarehouse* new_dw);
-
+    //JIAHAO
+    virtual void computeInjury(const PatchSubset* patches,
+                                     const MPMMaterial* matl,
+                                     DataWarehouse* old_dw,
+                                     DataWarehouse* new_dw);
 
     // carry forward CM data for RigidMPM
     virtual void carryForward(const PatchSubset* patches,

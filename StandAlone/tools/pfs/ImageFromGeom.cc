@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
   // make room to store the image
   int nsize = res[0]*res[1]*res[2];
-  byte* pimg = scinew byte[nsize];
+  unsigned char* pimg = scinew unsigned char[nsize];
 
   // Initialize pimg to zero
   for(int n=0;n<nsize;n++){
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     cout << "FATAL ERROR : Failed opening points file" << endl;
     exit(0);
   }
-  fwrite(pimg, sizeof(byte), nsize, dest);
+  fwrite(pimg, sizeof(unsigned char), nsize, dest);
 
   // clean up image data
   delete [] pimg;
