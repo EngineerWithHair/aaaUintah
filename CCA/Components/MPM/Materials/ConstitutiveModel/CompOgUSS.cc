@@ -442,7 +442,7 @@ void CompOgUSS::computeInjury(const PatchSubset* patches,
       double old_e1(0.0),old_e2(0.0),old_e3(0.0);
       double new_e1(0.0),new_e2(0.0),new_e3(0.0);
       double old_MPS(0.0), new_MPS(0.0);
-      double threshold(1.0);
+      double threshold(0.025);
 
       //std::cout<<"pInjury before computation: "<<pInjury[idx]<<std::endl;
       // Matrix3 pDefGradTranspose = pDefGrad[idx].Transpose();
