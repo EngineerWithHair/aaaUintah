@@ -191,7 +191,7 @@ void CompOgUSS::computeStressTensor(const PatchSubset* patches,
     Matrix3 Identity; Identity.Identity();
     Matrix3 F_bar_new, F_bar;
     Matrix3 FRate_new, D_new;
-    Matrix3 B_bar_new, C_bar_new, L_bar_new, D_bar_new, BDB_bar_new, BBDBB_bar_new, eigVec_B_bar_new;
+    Matrix3 B_bar_new, C_bar_new, L_bar_new, D_bar_new, BDB_bar_new, BBDBB_bar_new, eigVec_B_bar_new /*,eigVec_B_bar_new_*/;
     Matrix3 FRate_bar_new, CRate_bar_new, CRate_bar_new_sq;
     Matrix3 dev_BDB_bar_new, dev_BBDBB_bar_new;
     Matrix3 pressure, deviatoric_elasticstress, deviatoric_viscousstress; // deviatoric_elasticstress_principal is defined separately in the main body.
@@ -286,20 +286,44 @@ void CompOgUSS::computeStressTensor(const PatchSubset* patches,
       JAMA::Eigenvalue<double> eigB(B_bar_new_temp);
       TNT::Array2D<double> V(3,3);
       eigB.getV(V); //Returns matrix of eigenvectors (as three columns) of V.
-      for (int ii = 0; ii < 3; ++ii) {
+      
+      //Kshitiz original:
+      /*for (int ii = 0; ii < 3; ++ii) {
          for (int jj = 0; jj < 3; ++jj) {
             eigVec_B_bar_new(ii,jj) = V[ii][jj];
          }
-      }
+      }*/
+      
       
       // Normalize eigenvector matrix of B.
-      double norm_jj;
+      /*double norm_jj;
       for (int jj = 0; jj < 3; ++jj) {
          norm_jj = sqrt(pow(eigVec_B_bar_new(0,jj),2) + pow(eigVec_B_bar_new(1,jj),2) + pow(eigVec_B_bar_new(2,jj),2)); //Norm of the jj column.
          for (int ii = 0; ii < 3; ++ii) {
             eigVec_B_bar_new(ii,jj) = eigVec_B_bar_new(ii,jj)/norm_jj;
          }
-      }
+      }*/
+
+      //std::cout<<"No unrolling: "<<eigVec_B_bar_new(0,0)<<"  "<<eigVec_B_bar_new(1,2)<<"  "<<eigVec_B_bar_new(2,2)<<std::endl;
+
+      //JIAHAO: loop unrolling and divide
+      double normColOne, normColTwo, normColThree;
+      normColOne    = sqrt(pow(V[0][0],2) + pow(V[1][0],2) + pow(V[2][0],2));
+      normColTwo    = sqrt(pow(V[0][1],2) + pow(V[1][1],2) + pow(V[2][1],2));
+      normColThree  = sqrt(pow(V[0][2],2) + pow(V[1][2],2) + pow(V[2][2],2)); //Norm of the jj column.
+
+      //JIAHAO: loop unrolling
+      eigVec_B_bar_new(0,0)=V[0][0]/normColOne;
+      eigVec_B_bar_new(0,1)=V[0][1]/normColTwo;
+      eigVec_B_bar_new(0,2)=V[0][2]/normColThree;
+      eigVec_B_bar_new(1,0)=V[1][0]/normColOne;
+      eigVec_B_bar_new(1,1)=V[1][1]/normColTwo;
+      eigVec_B_bar_new(1,2)=V[1][2]/normColThree;
+      eigVec_B_bar_new(2,0)=V[2][0]/normColOne;
+      eigVec_B_bar_new(2,1)=V[2][1]/normColTwo;
+      eigVec_B_bar_new(2,2)=V[2][2]/normColThree;
+
+      //std::cout<<"Yes unrolling: "<<eigVec_B_bar_new(0,0)<<"  "<<eigVec_B_bar_new(1,2)<<"  "<<eigVec_B_bar_new(2,2)<<std::endl;
 
       // Compute the invariants
       invar1_bar = C_bar_new.Trace();
