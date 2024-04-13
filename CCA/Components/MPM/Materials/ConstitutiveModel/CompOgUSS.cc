@@ -266,9 +266,15 @@ void CompOgUSS::computeStressTensor(const PatchSubset* patches,
       JAMA::Eigenvalue<double> eigC(C_bar_new_temp);
       TNT::Array1D<double> evalC(3);
       eigC.getRealEigenvalues(evalC);
-      for (int ii = 0; ii < 3; ++ii) {
+      // Kshitiz's rolled look
+      /*for (int ii = 0; ii < 3; ++ii) {
          lambda_bar_new[ii] = sqrt(evalC[ii]);
-      }
+      }*/
+
+      // JIAHAO: loop unrolling
+      lambda_bar_new[0]=sqrt(evalC[0]);
+      lambda_bar_new[1]=sqrt(evalC[1]);
+      lambda_bar_new[2]=sqrt(evalC[2]);
 
       FRate_new = velGrad[idx] * deformationGradient_new[idx];
       D_new = (velGrad[idx] + velGrad[idx].Transpose())*.5;
@@ -294,7 +300,7 @@ void CompOgUSS::computeStressTensor(const PatchSubset* patches,
          }
       }*/
       
-      
+      // Kshitiz original:
       // Normalize eigenvector matrix of B.
       /*double norm_jj;
       for (int jj = 0; jj < 3; ++jj) {
@@ -304,7 +310,7 @@ void CompOgUSS::computeStressTensor(const PatchSubset* patches,
          }
       }*/
 
-      //std::cout<<"No unrolling: "<<eigVec_B_bar_new(0,0)<<"  "<<eigVec_B_bar_new(1,2)<<"  "<<eigVec_B_bar_new(2,2)<<std::endl;
+      //std::cout<<"No unrolling eigVec_B_bar_new: "<<eigVec_B_bar_new(0,0)<<"  "<<eigVec_B_bar_new(1,2)<<"  "<<eigVec_B_bar_new(2,2)<<std::endl;
 
       //JIAHAO: loop unrolling and divide
       double normColOne, normColTwo, normColThree;
@@ -323,7 +329,7 @@ void CompOgUSS::computeStressTensor(const PatchSubset* patches,
       eigVec_B_bar_new(2,1)=V[2][1]/normColTwo;
       eigVec_B_bar_new(2,2)=V[2][2]/normColThree;
 
-      //std::cout<<"Yes unrolling: "<<eigVec_B_bar_new(0,0)<<"  "<<eigVec_B_bar_new(1,2)<<"  "<<eigVec_B_bar_new(2,2)<<std::endl;
+      //std::cout<<"Yes unrolling eigVec_B_bar_new_: "<<eigVec_B_bar_new_(0,0)<<"  "<<eigVec_B_bar_new_(1,2)<<"  "<<eigVec_B_bar_new_(2,2)<<std::endl;
 
       // Compute the invariants
       invar1_bar = C_bar_new.Trace();
@@ -429,7 +435,7 @@ void CompOgUSS::computeInjury(const PatchSubset* patches,
 //    ParticleSubset* pset = old_dw->getParticleSubset(dwi, patch);
     ParticleSubset* pset = old_dw->getParticleSubset(dwi, patch,
                                                      gan, 0, lb->pXLabel);
-    Vector dx            = patch->dCell();
+    //Vector dx            = patch->dCell();
 
     // Particle and grid data universal to model type
     // Old data containers
